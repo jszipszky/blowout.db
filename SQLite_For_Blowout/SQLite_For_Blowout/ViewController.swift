@@ -14,9 +14,56 @@ class ViewController: UIViewController {
     var database: Connection!
     
     let usersTable = Table("users")
-    let id = Expression<Int>("id")
-    let name = Expression<String>("name")
-    let email = Expression<String>("email")
+    let userid = Expression<Int>("userid")
+    let useremail = Expression<String>("useremail")
+    let userpassword = Expression<String>("userpassword")
+    let userphone = Expression<String>("userphone")
+    let usercountry = Expression<String>("usercountry")
+    let userstate = Expression<String>("userstate")
+    let usercity = Expression<String>("usercity")
+    let useraddress = Expression<String>("useraddress")
+    
+    let eventsTable = Table("events")
+    let eventid = Expression<Int>("eventid")
+    let eventtitle = Expression<String>("eventtitle")
+    let eventcountry = Expression<String>("eventcountry")
+    let eventstate = Expression<String>("eventstate")
+    let eventcity = Expression<String>("eventcity")
+    let eventvenue = Expression<String>("eventvenue")
+    let eventdate = Expression<String>("eventdate")
+    let eventstart = Expression<Int>("eventstart")
+    let eventend = Expression<Int>("eventend")
+    let eventgathering = Expression<String>("eventgathering")
+    
+    
+    // CREATE
+    // email
+    // password
+    // confirm
+    // phone
+    
+    // PROFILE
+    // email
+    // phone
+    // country
+    // state
+    // city
+    // address
+    
+    // EVENT
+    // Title
+    // Country
+    // State
+    // City
+    // Venue
+    // Date
+    // Start Time
+    // End Time
+    // Gathering
+    // Contact Number
+    // Facility
+    // Picture
+    // Note
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,13 +81,18 @@ class ViewController: UIViewController {
         }
     }
 
-    @IBAction func createTable() {
+    @IBAction func createUserTable() {
         print("CREATE TAPPED")
         
         let createTable = self.usersTable.create { (table) in
-            table.column(self.id, primaryKey: true)
-            table.column(self.name)
-            table.column(self.email, unique: true)
+            table.column(self.userid, primaryKey: true)
+            table.column(self.useremail, unique: true)
+            table.column(self.userpassword)
+            table.column(self.userphone)
+            table.column(self.usercountry)
+            table.column(self.userstate)
+            table.column(self.usercity)
+            table.column(self.useraddress)
         }
         
         do {
@@ -51,6 +103,32 @@ class ViewController: UIViewController {
             print(error)
         }
     }
+    
+    @IBAction func createEventTable() {
+      print("EVENT TAPPED")
+      
+      let createTable = self.eventsTable.create { (table) in
+        table.column(self.eventid, primaryKey : true)
+        table.column(self.eventtitle)
+        table.column(self.eventcountry)
+        table.column(self.eventstate)
+        table.column(self.eventcity)
+        table.column(self.eventvenue)
+        table.column(self.eventdate)
+        table.column(self.eventstart)
+        table.column(self.eventend)
+        table.column(self.eventgathering)
+      }
+      
+      do {
+        try self.database.run(createTable)
+        print("Created event table")
+      }
+      catch {
+        print(error)
+      }
+    }
+
     
     @IBAction func insertUser() {
         print("INSERT TAPPED")
