@@ -3,6 +3,7 @@
 //  SQLite_For_Blowout
 //
 //  Created by Jackson McCluskey on 2/22/20.
+//      Fork: Jack Szipszky on 2/23/20
 //  Copyright © 2020 Team 21. All rights reserved.
 //
 
@@ -34,6 +35,8 @@ class ViewController: UIViewController {
     let eventstart = Expression<Int>("eventstart")
     let eventend = Expression<Int>("eventend")
     let eventgathering = Expression<String>("eventgathering")
+    let eventcontact = Expression<Int>("eventcontact")
+    let eventnote = Expression<String>("eventnote")
     
     
     // CREATE
@@ -118,6 +121,8 @@ class ViewController: UIViewController {
         table.column(self.eventstart)
         table.column(self.eventend)
         table.column(self.eventgathering)
+        table.column(self.eventcontact)
+        table.column(self.eventnote)
       }
       
       do {
@@ -157,6 +162,73 @@ class ViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    @IBAction func insertEvent() {
+        print("INSERT EVENT TAPPED")
+        
+        let alert = UIAlertController(title: "Insert Event", message: nil, preferredStyle: .alert)
+        alert.addTextField { (tf) in tf.placeholder = "Name" }
+        alert.addTextField { (tf) in tf.placeholder = "Country" }
+        alert.addTextField { (tf) in tf.placeholder = "State" }
+        alert.addTextField { (tf) in tf.placeholder = "City" }
+        alert.addTextField { (tf) in tf.placeholder = "Venue" }
+        alert.addTextField { (tf) in tf.placeholder = "Date" }
+        alert.addTextField { (tf) in tf.placeholder = "Start" }
+        alert.addTextField { (tf) in tf.placeholder = "End" }
+        alert.addTextField { (tf) in tf.placeholder = "Gathering" }
+        alert.addTextField { (tf) in tf.placeholder = "Contact" }
+        alert.addTextField { (tf) in tf.placeholder = "Note" }       
+        
+        let action = UIAlertAction(title: "Submit", style: .default) { (_) in
+            guard
+                let name = alert.textFields![0].text,
+                let country = alert.textFields![1].text,
+                let state = alert.textFields![2].text,
+                let city = alert.textFields![3].text,
+                let venue = alert.textFields![4].text,
+                let date = alert.textFields![5].text,
+                let start = alert.textFields![6].text,
+                let end = alert.textFields![7].text,
+                let gathering = alert.textFields![8].text,
+                let contact = alert.textFields![9].text,
+                let note = alert.textFields![10].text,
+                else { return }
+            print(name)
+            print(country)
+            print(state)
+            print(city)
+            print(venue)
+            print(date)
+            print(start)
+            print(end)
+            print(gathering)
+            print(contact)
+            print(note)
+            
+            let insertEvent = self.eventsTable.insert(
+                self.eventtitle <- name,
+                self.eventcountry <- country,
+                self.eventstate <- state,
+                self.eventcity <- city,
+                self.eventvenue <- venue,
+                self.eventdate <- date,
+                self.eventstart <- start,
+                self.eventend <- end,
+                self.eventgathering <- gathering,
+                self.eventcontact <- contact,
+                self.eventnote <- note)
+            
+            do {
+                try self.database.run(insertEvent)
+                print("INSERTED EVENT")
+            }
+            catch {
+                print(error)
+            }
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+    
     @IBAction func listUsers() {
         print("LIST TAPPED")
         
@@ -164,6 +236,31 @@ class ViewController: UIViewController {
             let users = try self.database.prepare(self.usersTable)
             for user in users {
                 print("userId: \(user[self.id]), name: \(user[self.name]), email: \(user[self.email])")
+            }
+        }
+        catch {
+            print(error)
+        }
+    }
+    
+    @IBAction func listEvents() {
+        print("LIST EVENTS TAPPED")
+        
+        do {
+            let events = try self.database.prepare(self.eventsTable)
+            for event in events {
+                print("eventId: \(event[self.eventid]), 
+                       name: \(event[self.eventtitle]),
+                       country: \(event[self.eventcountry]),
+                       state: \(event[self.eventstate]),
+                       city: \(event[self.eventcity]),
+                       venue: \(event[self.eventvenue]),
+                       date: \(event[self.eventdate]),
+                       start: \(event[self.eventstart]),
+                       end: \(event[self.eventend]),
+                       gathering: \(event[self.eventgathering]),
+                       contact: \(event[self.eventcontact]),
+                       note: \(event[self.eventnote])")
             }
         }
         catch {
@@ -200,7 +297,7 @@ class ViewController: UIViewController {
     
     @IBAction func deleteUser() {
         print("DELETE TAPPED")
-        let alert = UIAlertController(title: "Update User", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Delete User", message: nil, preferredStyle: .alert)
         alert.addTextField { (tf) in tf.placeholder = "User ID" }
         let action = UIAlertAction(title: "Submit", style: .default) { (_) in
             guard let userIdString = alert.textFields?.first?.text,
@@ -213,6 +310,31 @@ class ViewController: UIViewController {
             
             do {
                 try self.database.run(deleteUser)
+            }
+            catch {
+                print(error)
+            }
+            
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+        
+    @IBAction func deleteEvent() {
+        print("DELETE EVENT TAPPED")
+        let alert = UIAlertController(title: "Delete Event", message: nil, preferredStyle: .alert)
+        alert.addTextField { (tf) in tf.placeholder = "Event ID" }
+        let action = UIAlertAction(title: "Submit", style: .default) { (_) in
+            guard let eventIdString = alert.textFields?.first?.text,
+                let eventId = Int(eventIdString)
+            else { return }
+            print(eventIdString)
+            
+            let event = self.eventsTable.filter(self.eventid == eventId)
+            let deleteEvent = event.delete()
+            
+            do {
+                try self.database.run(deleteEvent)
             }
             catch {
                 print(error)
